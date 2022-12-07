@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import { Feed } from "../../model/Feed";
 
 interface ListaProps {
@@ -7,27 +7,57 @@ interface ListaProps {
 }
 
 const Lista = (props: ListaProps) => {
+  const [feed, setFeed] = useState<Feed>(props.data);
+
+  const mostrarLikers = () => {
+    if (feed.likers <= 0) {
+      return;
+    } else {
+      return (
+        <Text style={styles.likes}>
+          {feed.likers} {feed.likers > 1 ? "curtidas" : "curtida"}
+        </Text>
+      );
+    }
+  };
+
+  const curtir = () => {
+    if (feed.likeada) {
+      setFeed((prevState) => ({
+        ...prevState,
+        likeada: false,
+        likers: prevState.likers - 1,
+      }));
+    } else {
+      setFeed((prevState) => ({
+        ...prevState,
+        likeada: true,
+        likers: prevState.likers + 1,
+      }));
+    }
+  };
+
+  const carregarIcone = (): HTMLImageElement => {
+    return feed.likeada
+      ? require(`../../../assets/likeada.png`)
+      : require(`../../../assets/like.png`);
+  };
+
   return (
     <View style={styles.areaFeed}>
       <View style={styles.viewPerfil}>
-        <Image
-          source={{ uri: props.data.imgperfil }}
-          style={styles.fotoPerfil}
-        />
-        <Text style={styles.nomeUsuario}>{props.data.nome}</Text>
+        <Image source={{ uri: feed.imgperfil }} style={styles.fotoPerfil} />
+        <Text style={styles.nomeUsuario}>{feed.nome}</Text>
       </View>
       <Image
         resizeMode="cover"
-        source={{ uri: props.data.imgPublicacao }}
+        source={{ uri: feed.imgPublicacao }}
         style={styles.fotoFeed}
       />
 
       <View style={styles.areaBtn}>
-        <TouchableOpacity>
-          <Image
-            source={require("../../../assets/like.png")}
-            style={styles.icone}
-          />
+        <TouchableOpacity onPress={curtir}>
+          <Image source={carregarIcone()} style={styles.icone} />
         </TouchableOpacity>
         <TouchableOpacity style={styles.btnSend}>
           <Image
@@ -36,9 +66,11 @@ const Lista = (props: ListaProps) => {
           />
         </TouchableOpacity>
       </View>
+      {mostrarLikers()}
+
       <View style={styles.viewRodape}>
-        <Text style={styles.nomeRodape}>{props.data.nome}</Text>
-        <Text style={styles.descRodape}>{props.data.descricao}</Text>
+        <Text style={styles.nomeRodape}>{feed.nome}</Text>
+        <Text style={styles.descRodape}>{feed.descricao}</Text>
       </View>
     </View>
   );
@@ -95,5 +127,9 @@ const styles = StyleSheet.create({
     paddingLeft: 5,
     fontSize: 15,
     color: "#000",
+  },
+  likes: {
+    fontWeight: "bold",
+    marginLeft: 5,
   },
 });

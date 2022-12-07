@@ -33,7 +33,6 @@ export default function App() {
       <FlatList
         showsHorizontalScrollIndicator={false}
         keyExtractor={keyItem}
-        //keyExtractor={(item) => item.id}
         data={feed}
         renderItem={renderItem}
       />
