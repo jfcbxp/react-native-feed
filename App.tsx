@@ -1,5 +1,4 @@
-import { StatusBar } from "expo-status-bar";
-import { ReactElement, useState } from "react";
+import { useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -8,6 +7,7 @@ import {
   TouchableOpacity,
   FlatList,
   ListRenderItem,
+  SafeAreaView,
 } from "react-native";
 import Lista from "./src/components/Lista";
 import { Feed } from "./src/model/Feed";
@@ -18,9 +18,10 @@ export default function App() {
   const [feed, setFeed] = useState<Feed[]>(service.listar());
 
   const renderItem: ListRenderItem<Feed> = ({ item }) => <Lista data={item} />;
+  const keyItem: (item: Feed) => string = (item: Feed) => item.id;
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity>
           <Image source={require("./assets/logo.png")} style={styles.logo} />
@@ -31,10 +32,12 @@ export default function App() {
       </View>
       <FlatList
         showsHorizontalScrollIndicator={false}
+        keyExtractor={keyItem}
+        //keyExtractor={(item) => item.id}
         data={feed}
         renderItem={renderItem}
       />
-    </View>
+    </SafeAreaView>
   );
 }
 
